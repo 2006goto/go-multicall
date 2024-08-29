@@ -1,6 +1,6 @@
 # go-multicall
 ![coverage](https://img.shields.io/badge/coverage-87.7%25-brightgreen)
-![build](https://github.com/forta-network/go-multicall/actions/workflows/build.yml/badge.svg)
+![build](https://github.com/guildxyz/go-multicall/actions/workflows/build.yml/badge.svg)
 
 A thin Go client for making multiple function calls in single `eth_call` request
 
@@ -12,7 +12,7 @@ _**Warning:** MakerDAO Multicall contracts are different than the [OpenZeppelin 
 ## Install
 
 ```
-go get github.com/forta-network/go-multicall
+go get github.com/guildxyz/go-multicall
 ```
 
 ## Example
@@ -27,7 +27,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/forta-network/go-multicall"
+	"github.com/guildxyz/go-multicall"
 	"github.com/ethereum/go-ethereum/common"
 )
 

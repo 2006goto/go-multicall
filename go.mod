@@ -1,4 +1,4 @@
-module github.com/forta-network/go-multicall
+module github.com/guildxyz/go-multicall
 
 go 1.19
 
