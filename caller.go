@@ -70,7 +70,10 @@ func (caller *Caller) Call(opts *bind.CallOpts, calls ...*Call) ([]*Call, error)
 		call := calls[i] // index always matches
 		call.Failed = !result.Success
 		if err := call.Unpack(result.ReturnData); err != nil {
-			return calls, fmt.Errorf("failed to unpack call outputs at index [%d]: %v", i, err)
+			call.Failed = true
+			if !call.CanFail {
+				return calls, fmt.Errorf("failed to unpack call outputs at index [%d]: %v", i, err)
+			}
 		}
 	}
 
