@@ -166,3 +166,55 @@ func TestCall_ChainEthBalance(t *testing.T) {
 		})
 	}
 }
+
+func TestOntology(t *testing.T) {
+	ctx := context.Background()
+	rpcURL := "https://dappnode3.ont.io:10339"
+	multicallAddress := "0x381e7fb9671aad4b48d02dbee167b1e4cbf597ae"
+	contractAddress := "0xae834526aa3b70de9b34f81c4bf51bc2c80a5473"
+	address := deadAddr
+	abiERC20, err := ParseABI(ERC20ABI)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	caller, err := Dial(ctx, rpcURL, multicallAddress)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var calls []*Call
+	erc20Contract := &Contract{
+		ABI:     abiERC20,
+		Address: common.HexToAddress(contractAddress),
+	}
+
+	rBalance := new(BalanceOutput)
+	rDecimals := new(DecimalsOutput)
+	calls = append(calls, erc20Contract.NewCall(
+		rBalance,
+		"balanceOf",
+		common.HexToAddress(address),
+	).AllowFailure())
+	calls = append(calls, erc20Contract.NewCall(
+		rDecimals,
+		"decimals",
+	).AllowFailure())
+
+	t.Log(rpcURL)
+	t.Log(multicallAddress)
+	t.Log(contractAddress)
+	t.Log(address)
+
+	res, err := caller.Call(nil, calls...)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if len(res) == 0 {
+		t.Error("no results")
+		return
+	}
+	t.Log(rBalance.Balance)
+	t.Log(res[0].Failed)
+	t.Log(rDecimals.Decimals)
+}
