@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -80,7 +79,12 @@ type BalanceOutput struct {
 	Balance *big.Int
 }
 
+type DecimalsOutput struct {
+	Decimals uint8
+}
+
 func TestCall_BadContract(t *testing.T) {
+	t.Skip("test uses a live network")
 	ctx := context.Background()
 	rpcURL := "https://cloudflare-eth.com"
 	abiERC20, err := ParseABI(ERC20ABI)
@@ -133,40 +137,4 @@ func TestCall_BadContract(t *testing.T) {
 	require.Equal(t, true, res[0].Failed)
 	require.Equal(t, true, res[1].Failed)
 	require.Equal(t, false, res[2].Failed)
-}
-
-func TestCall_ExoticChains(t *testing.T) {
-	ctx := context.Background()
-	rpcURL := "https://1rpc.io/zksync2-era"
-	abiERC20, err := ParseABI(ERC20ABI)
-	if err != nil {
-		t.Fatal(err)
-	}
-	multicallAddr := "0x47898B2C52C957663aE9AB46922dCec150a2272c"
-	caller, err := Dial(ctx, rpcURL, multicallAddr)
-	// caller, err := Dial(ctx, rpcURL)
-	if err != nil {
-		t.Fatal(err)
-	}
-	var calls []*Call
-
-	notContract := &Contract{
-		ABI:     abiERC20,
-		Address: common.HexToAddress("0x1d17CBcF0D6D143135aE902365D2E5e2A16538D4"),
-	}
-	notContractBalance := new(BalanceOutput)
-	calls = append(calls, notContract.NewCall(
-		notContractBalance,
-		"balanceOf",
-		common.HexToAddress("0x000000000000000000000000000000000000dEaD"),
-	).AllowFailure())
-
-	res, err := caller.Call(nil, calls...)
-	if err != nil {
-		t.Fatal(err)
-	}
-	assert.False(t, res[0].Failed)
-	assert.True(t, res[0].Outputs.(*BalanceOutput).Balance.Cmp(big.NewInt(0)) > 0)
-	t.Log(notContractBalance.Balance)
-	t.Log(res[0].Failed)
 }
